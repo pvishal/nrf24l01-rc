@@ -1,0 +1,7 @@
+# Compile artifacts #
+###################
+*.o
+*.lst
+*.out
+*.hex
+*.map

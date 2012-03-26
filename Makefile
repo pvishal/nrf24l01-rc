@@ -71,7 +71,7 @@ WINAVRPATH=D:\Programs\WinAVR
 # Name of target controller
 # (e.g. 'at90s8515', see the available avr-gcc mmcu
 # options for possible values)
-MCU=at90usb1287
+MCU=atmega328p
 
 # Clock frequency
 # Append a "UL" at the end, eg. if clock frequency is

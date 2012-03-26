@@ -12,12 +12,12 @@
 #define ADDRESS_LENGTH 5
 
 // Pin definitions for chip select and chip enable on the radio module
-#define CE_DDR		DDRB
-#define CSN_DDR		DDRE
-#define CE_PORT		PORTB
-#define CSN_PORT	PORTE
-#define CE_PIN		PB4
-#define CSN_PIN		PE6
+#define CE_DDR		DDRD
+#define CSN_DDR		DDRD
+#define CE_PORT		PORTD
+#define CSN_PORT	PORTD
+#define CE_PIN		PD7
+#define CSN_PIN		PD6
 
 // Definitions for selecting and enabling the radio
 #define CSN_HIGH()	CSN_PORT |=  _BV(CSN_PIN);
@@ -43,7 +43,7 @@ extern void radio_rxhandler(uint8_t pipenumber);
 /**
  * Retrieve the status register.
  */
-static uint8_t get_status()
+static uint8_t get_status(void)
 {
 	uint8_t status = 0;
 	CSN_LOW();
@@ -126,7 +126,7 @@ static void send_instruction(uint8_t instruction, uint8_t* data, uint8_t* buffer
 /**
  * Switch the radio to receive mode.  If the radio is already in receive mode, this does nothing.
  */
-static void set_rx_mode()
+static void set_rx_mode(void)
 {
 	uint8_t config;
 	get_register(CONFIG, &config, 1);
@@ -143,7 +143,7 @@ static void set_rx_mode()
 /**
  * Switch the radio to transmit mode.  If the radio is already in transmit mode, this does nothing.
  */
-static void set_tx_mode()
+static void set_tx_mode(void)
 {
 	uint8_t config;
 	get_register(CONFIG, &config, 1);
@@ -164,7 +164,7 @@ static void set_tx_mode()
  * the pipe 0 address is set to the transmit address while the radio is transmitting (this is how the radio receives
  * auto-ack packets).
  */
-static void reset_pipe0_address()
+static void reset_pipe0_address(void)
 {
 	if (rx_pipe_widths[RADIO_PIPE_0] != 0)
 	{
@@ -178,7 +178,7 @@ static void reset_pipe0_address()
  * This configures the radio to its max-power, max-packet-header-length settings.  If you want to reduce power consumption
  * or increase on-air payload bandwidth, you'll have to change the config.
  */
-static void configure_registers()
+static void configure_registers(void)
 {
 	uint8_t value;
 
@@ -222,15 +222,15 @@ void Radio_Init()
 	// disable radio during config
 	CE_LOW();
 
-	// set as output AT90 pins connected to the radio's slave select and chip enable pins.
+	// set as output AVR pins connected to the radio's slave select and chip enable pins.
 	CE_DDR |= _BV(CE_PIN);
 	CSN_DDR |= _BV(CSN_PIN);
 
 	// Enable radio interrupt.  This interrupt is triggered when data are received and when a transmission completes.
-	DDRE &= ~_BV(PORTE7);
-	EICRB |= _BV(ISC71);
-	EICRB &= ~_BV(ISC70);
-	EIMSK |= _BV(INT7);
+	DDRD &= ~_BV(PORTD2);
+	EICRA |= _BV(ISC01);
+	EICRA &= ~_BV(ISC00);
+	EIMSK |= _BV(INT0);
 
 	// A 10.3 ms delay is required between power off and power on states (controlled by 3.3 V supply).
 	_delay_ms(11);
@@ -435,7 +435,7 @@ void Radio_Flush()
 }
 
 // Interrupt handler
-ISR(INT7_vect)
+ISR(INT0_vect)
 {
     uint8_t status;
     uint8_t pipe_number;

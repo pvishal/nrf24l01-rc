@@ -4,7 +4,7 @@
  *  Created on: 24-Jan-2009
  *      Author: Neil MacMillan
  *
- *  Functions for using the AT90 as an SPI master.
+ *  Functions for using the AVR as an SPI master.
  */
 
 #include "spi.h"
@@ -14,17 +14,17 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define SPI_DDR DDRB	// DDR of SPI port
-#define SPI_PORT PORTB	// SPI port
-#define SPI_MOSI PORTB2	// MOSI pin (Master out, Slave in)
-#define SPI_MISO PORTB3	// MISO pin (Master in, Slave out)
-#define SPI_SCK PORTB1	// SCK pin (SPI clock)
-#define SPI_SS PORTB0	// SS pin (Slave Select)
+#define SPI_DDR		DDRB	// DDR of SPI port
+#define SPI_PORT	PORTB	// SPI port
+#define SPI_MOSI	PORTB3	// MOSI pin (Master out, Slave in)
+#define SPI_MISO	PORTB4	// MISO pin (Master in, Slave out)
+#define SPI_SCK		PORTB5	// SCK pin (SPI clock)
+#define SPI_SS		PORTB2	// SS pin (Slave Select)
 
 // wait for an SPI read/write operation to complete
 #define SPI_WAIT()              while ((SPSR & _BV(SPIF)) == 0);
 
-void SPI_Init()
+void SPI_Init(void)
 {
 	// The DDR operations are pretty fragile and doing this less awkwardly breaks SPI.  I don't care enough
 	// to figure out why right now.  Note that SPI_SS is the actual SPI port's SS pin, which is not necessarily
@@ -48,7 +48,7 @@ void SPI_Init()
 	 * bit 0
 	 */
 
-    // Set the AT90's SS pin high during config (this disables the Flash RAM or something)
+    // Set the AVR's SS pin high during config (this disables the Flash RAM or something)
     SPI_PORT |= _BV(SPI_SS);
 
 	SPCR = _BV(SPE) | _BV(MSTR);	// enable SPI, set as master, set prescaler to f(osc)/4

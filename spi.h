@@ -4,7 +4,7 @@
  *  Created on: 24-Jan-2009
  *      Author: Neil MacMillan
  *
- *  Macros and prototypes for using the AT90 as an SPI master.
+ *  Macros and prototypes for using the AVR as an SPI master.
  *
  *  References:
  *    Engelke, Stefan.  AVR-Lib/SPI.  http://www.tinkerer.eu/AVRLib/SPI
@@ -25,7 +25,7 @@
  * Initialize the SPI port as a master.
  * This function must be called once before using the SPI interface.
  */
-void SPI_Init();
+void SPI_Init(void);
 
 /**
  * Write a block of data to the slave, and read the data returned from the slave into a buffer.

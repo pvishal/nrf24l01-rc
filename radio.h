@@ -76,7 +76,7 @@ typedef enum _ed {
 	ENABLE=1,
 } ON_OFF;		// there's got to be a better name for this.
 
-void Radio_Init();
+void Radio_Init( void );
 
 
 /**
@@ -150,11 +150,11 @@ RADIO_RX_STATUS Radio_Receive(radiopacket_t* buffer);
  * Calculate the radio's transmit success rate over the last 16 packets.  The return value is the percentage of packets
  * that were transmitted successfully, ranging from 0 to 100.
  */
-uint8_t Radio_Success_Rate();
+uint8_t Radio_Success_Rate(void);
 
 /**
  * Flush the radio's Rx and Tx FIFOs.
  */
-void Radio_Flush();
+void Radio_Flush(void);
 
 #endif /* RADIO_H_ */
