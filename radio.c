@@ -348,7 +348,7 @@ uint8_t Radio_Transmit(radiopacket_t* payload, RADIO_TX_WAIT wait)
     set_register(RX_ADDR_P0, (uint8_t*)tx_address, ADDRESS_LENGTH);
 
     // transfer the packet to the radio's Tx FIFO for transmission
-    send_instruction(W_TX_PAYLOAD, payload, NULL, len);
+    send_instruction(W_TX_PAYLOAD, (uint8_t*)payload, NULL, len);
 
     // start the transmission.
     CE_HIGH();
@@ -414,7 +414,7 @@ RADIO_RX_STATUS Radio_Receive(radiopacket_t* buffer)
 }
 
 // This is only accurate if all the failed packets were sent using auto-ack.
-uint8_t Radio_Success_Rate()
+uint8_t Radio_Drop_Rate()
 {
 	uint16_t wh = tx_history;
 	uint8_t weight = 0;
