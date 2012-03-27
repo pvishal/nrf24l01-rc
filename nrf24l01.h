@@ -25,7 +25,7 @@
 typedef uint8_t radio_register_t;
 
 
-/*****											Registers										*****/
+/*****                                          Registers                                       *****/
 
 /// Configure interrupts, CRC, power, and Tx/Rx status
 #define CONFIG      0x00
@@ -69,7 +69,7 @@ typedef uint8_t radio_register_t;
 #define FIFO_STATUS 0x17
 
 
-/*****							Register Bit Mask Shift Values (use with _BV())							*****/
+/*****                          Register Bit Mask Shift Values (use with _BV())                         *****/
 
 /// CONFIG Register
 /// 0 - Rx data-ready interrupt is sent to IRQ pin.  1 - Interrupt is not sent to IRQ pin.
@@ -122,18 +122,18 @@ typedef uint8_t radio_register_t;
 
 /// SETUP_RETR Register
 /// Autoretransmit delay (bits 7:4):
-///		0000 - Wait 250+86 us.
-///		0001 - Wait 500+86 us.
-///		0010 - Wait 750+86 us.
-///		...
-///		1111 - Wait 4000+86 us.
+///     0000 - Wait 250+86 us.
+///     0001 - Wait 500+86 us.
+///     0010 - Wait 750+86 us.
+///     ...
+///     1111 - Wait 4000+86 us.
 #define ARD         4
 /// Autoretransmit count (bits 3:0)
-///		0000 - Retransmit disabled.
-///		0001 - Up to 1 retransmit on fail of auto-ack.
-///		0010 - Up to 2 retransmits.
-///		...
-///		1111 - Up to 15 retransmits.
+///     0000 - Retransmit disabled.
+///     0001 - Up to 1 retransmit on fail of auto-ack.
+///     0010 - Up to 2 retransmits.
+///     ...
+///     1111 - Up to 15 retransmits.
 #define ARC         0
 
 /// We skip the RF_CH register, because it's pretty straightforward.  Load the channel number into bits 6:0.
@@ -188,7 +188,7 @@ typedef uint8_t radio_register_t;
 /// 0 - The Rx FIFO is not empty.  1 - The Rx FIFO is empty.
 #define RX_FIFO_EMPTY    0
 
-/*****										Instructions										*****/
+/*****                                      Instructions                                        *****/
 /// Read Register
 #define R_REGISTER    0x00
 /// Write Register
