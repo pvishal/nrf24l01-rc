@@ -25,6 +25,9 @@ void delay(unsigned char count)
 
 int main(void)
 {
+
+    unsigned int c;
+
     /*
      * Set Pin 13 (PD7) of Arduino  as output for the LED
      */
@@ -52,9 +55,23 @@ int main(void)
 
     for(;;)
     {
-        delay(100);
-        PORTB ^= _BV(PB5);
-        uart_puts("Ping!\r\n");
+        c = uart_getc();
+        if ( c & UART_NO_DATA )
+        {
+            /*
+             * no data available from UART
+             * do nothing.
+             */
+        }
+        else
+        {
+            /*
+             * new data available from UART
+             * send it back
+             */
+            uart_putc( (unsigned char)c );
+            PORTB ^= _BV(PB5);
+        }
     }
 
 }
