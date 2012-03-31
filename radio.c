@@ -12,16 +12,13 @@
 #define ADDRESS_LENGTH 5
 
 // Pin definitions for chip select and chip enable on the radio module
-#define CE_DDR      DDRD
-#define CSN_DDR     DDRD
-#define CE_PORT     PORTD
-#define CSN_PORT    PORTD
-#define CE_PIN      PD7
-#define CSN_PIN     PD6
+#define CE_DDR      DDRB
+#define CE_PORT     PORTB
+#define CE_PIN      PB1
 
 // Definitions for selecting and enabling the radio
-#define CSN_HIGH()  CSN_PORT |=  _BV(CSN_PIN);
-#define CSN_LOW()   CSN_PORT &= ~_BV(CSN_PIN);
+#define CSN_HIGH()  SPI_SetCS()
+#define CSN_LOW()   SPI_ClrCS()
 #define CE_HIGH()   CE_PORT |=  _BV(CE_PIN);
 #define CE_LOW()    CE_PORT &= ~_BV(CE_PIN);
 
@@ -39,11 +36,12 @@ static volatile uint16_t tx_history = 0xFF;
 static volatile RADIO_TX_STATUS tx_last_status = RADIO_TX_SUCCESS;
 
 extern void radio_rxhandler(uint8_t pipenumber);
+extern void radio_txhandler(void);
 
 /**
  * Retrieve the status register.
  */
-static uint8_t get_status(void)
+uint8_t get_status(void)
 {
     uint8_t status = 0;
     CSN_LOW();
@@ -224,7 +222,7 @@ void Radio_Init()
 
     // set as output AVR pins connected to the radio's slave select and chip enable pins.
     CE_DDR |= _BV(CE_PIN);
-    CSN_DDR |= _BV(CSN_PIN);
+    //CSN_DDR |= _BV(CSN_PIN);
 
     // Enable radio interrupt.  This interrupt is triggered when data are received and when a transmission completes.
     DDRD &= ~_BV(PORTD2);
@@ -443,11 +441,12 @@ ISR(INT0_vect)
     CE_LOW();
 
     status = get_status();
+    radio_rxhandler(0);
 
     if (status & _BV(RX_DR))
     {
         pipe_number =  (status & 0xE) >> 1;
-        radio_rxhandler(pipe_number);
+        //radio_rxhandler(pipe_number);
     }
     // We can get the TX_DS or the MAX_RT interrupt, but not both.
     if (status & _BV(TX_DS))
@@ -462,6 +461,9 @@ ISR(INT0_vect)
         tx_history |= 1;
 
         tx_last_status = RADIO_TX_SUCCESS;
+        
+        // finally, notify the application. 
+        radio_txhandler();
     }
     else if (status & _BV(MAX_RT))
     {

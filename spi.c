@@ -24,6 +24,16 @@
 // wait for an SPI read/write operation to complete
 #define SPI_WAIT()              while ((SPSR & _BV(SPIF)) == 0);
 
+void SPI_SetCS(void)
+{
+    SPI_PORT |=  _BV(SPI_SS);
+}
+
+void SPI_ClrCS(void)
+{
+    SPI_PORT &=  ~_BV(SPI_SS);
+}
+
 void SPI_Init(void)
 {
     // The DDR operations are pretty fragile and doing this less awkwardly breaks SPI.  I don't care enough
@@ -51,9 +61,9 @@ void SPI_Init(void)
     // Set the AVR's SS pin high during config (this disables the Flash RAM or something)
     SPI_PORT |= _BV(SPI_SS);
 
-    SPCR = _BV(SPE) | _BV(MSTR);    // enable SPI, set as master, set prescaler to f(osc)/4
+    SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPR0);    // enable SPI, set as master, set prescaler to f(osc)/8
 
-    SPSR = _BV(SPI2X);                          // Double SCK to f(osc)/2 (4 MHz)
+    SPSR = _BV(SPI2X);                          // Double SCK to f(osc)/4 (=4MHz)
 
     SPI_PORT &= ~_BV(SPI_SS);
 }

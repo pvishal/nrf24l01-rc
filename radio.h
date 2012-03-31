@@ -157,4 +157,6 @@ uint8_t Radio_Success_Rate(void);
  */
 void Radio_Flush(void);
 
+uint8_t get_status(void);
+
 #endif /* RADIO_H_ */

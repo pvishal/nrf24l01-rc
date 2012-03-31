@@ -21,6 +21,9 @@
 #include <avr/io.h>
 #include <stdlib.h>
 
+void SPI_SetCS(void);
+void SPI_ClrCS(void);
+
 /**
  * Initialize the SPI port as a master.
  * This function must be called once before using the SPI interface.
