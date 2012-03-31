@@ -1,2 +1,5 @@
 
 This project attempts to port drivers for nRF24L01+ to Arduino UNO hardware. WinAVR + Makefile toolchain is used instead of the Arduino build system.
+
+Note:
+This project is a work-in-progress.  Things will not work before the first release.
