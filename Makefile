@@ -114,12 +114,12 @@ OPTLEVEL=2
 # one of the valid "-c PROGRAMMER-ID" values
 # described in the avrdude info page.
 #
-AVRDUDE_PROGRAMMERID=arduino
+AVRDUDE_PROGRAMMERID=stk500v1
 
 # port--serial or parallel port to which your
 # hardware programmer is attached
 #
-AVRDUDE_PORT=COM9
+AVRDUDE_PORT=\\\.\COM9
 AVRDUDE_BAUD=115200
 
 

@@ -441,12 +441,11 @@ ISR(INT0_vect)
     CE_LOW();
 
     status = get_status();
-    radio_rxhandler(0);
 
     if (status & _BV(RX_DR))
     {
         pipe_number =  (status & 0xE) >> 1;
-        //radio_rxhandler(pipe_number);
+        radio_rxhandler(pipe_number);
     }
     // We can get the TX_DS or the MAX_RT interrupt, but not both.
     if (status & _BV(TX_DS))

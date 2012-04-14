@@ -63,36 +63,12 @@ int main(void)
 	Radio_Set_Tx_Addr(station_addr);
 	Radio_Transmit(&packet, RADIO_WAIT_FOR_TX);
 	delay(10);
-
-    uart_puts("Device More Ready!\r\n");
     
-    // load up the packet contents again because the packet was used as an ACK packet before.
-	packet.type = MESSAGE;
-	memcpy(packet.payload.message.address, my_addr, RADIO_ADDRESS_LENGTH);
-	packet.payload.message.messageid = 55;
-	snprintf((char*)packet.payload.message.messagecontent, sizeof(packet.payload.message.messagecontent), "Test message.");
-	
-    if (Radio_Transmit(&packet, RADIO_WAIT_FOR_TX) == RADIO_TX_MAX_RT) // Transmitt packet.
-	{
-        uart_putc('n');
-	}
-	else // Transmitted succesfully.
-	{
-        uart_putc('s');
-	}
+    uart_puts("Transmit Station started. Press any character.\n\r");
+        
     
     for(;;)
-    {
-        if (txflag == 1)
-        {
-            txflag = 0;
-            uart_putc('t');
-        }
-        if (rxflag == 1)
-        {
-            rxflag = 0;
-            uart_putc('r');
-        }
+    {        
         c = uart_getc();
         if ( c & UART_NO_DATA )
         {
@@ -100,8 +76,36 @@ int main(void)
         }
         else
         {
-             /* new data available from UART */
-             Radio_Transmit(&packet, RADIO_WAIT_FOR_TX);
+            /* new data available from UART */
+            packet.type = MESSAGE;
+            memcpy(packet.payload.message.address, my_addr, RADIO_ADDRESS_LENGTH);
+            packet.payload.message.messageid = 55;
+            snprintf((char*)packet.payload.message.messagecontent, sizeof(packet.payload.message.messagecontent), "Test message.");
+            
+            if (Radio_Transmit(&packet, RADIO_WAIT_FOR_TX) == RADIO_TX_MAX_RT) // Transmitt packet.
+            {
+                uart_puts("Data not trasmitted. Max retry.");
+            }
+            else // Transmitted succesfully.
+            {
+                uart_puts("Data trasmitted.\r\n");
+            }
+            
+            // The rxflag is set by radio_rxhandler function below indicating that a
+            // new packet is ready to be read.
+            if (rxflag)
+            {
+                if (Radio_Receive(&packet) != RADIO_RX_MORE_PACKETS) // Receive packet.
+                {
+                    // if there are no more packets on the radio, clear the receive flag;
+                    // otherwise, we want to handle the next packet on the next loop iteration.
+                    rxflag = 0;
+                }
+                if (packet.type == ACK)
+                {
+                    uart_puts("ACK received.\r\n");
+                }
+            }
         }
     }
 
