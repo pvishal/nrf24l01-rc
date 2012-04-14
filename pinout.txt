@@ -1,0 +1,10 @@
+Connection Plan
+
+VCC     3.3V
+CE      PB1     A9
+CSN     PB2     A10
+SCK     PB5     A13
+MOSI    PB3     A11
+MISO    PB4     A12
+IRQ     PD2     A2
+GND     GND

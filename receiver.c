@@ -54,20 +54,62 @@ int main(void)
 	Radio_Configure(RADIO_2MBPS, RADIO_HIGHEST_POWER);
     
     // print a message to UART to indicate that the program has started up
-	uart_puts("STATION START\n\r");
+	uart_puts("Receive Station started\n\r");
 
     
     for(;;)
     {
-        if (txflag == 1)
-        {
-            txflag = 0;
-            uart_putc('t');
-        }
         if (rxflag == 1)
         {
+        
+            rx_status = Radio_Receive(&packet); // Copy received packet to memory and store the result in rx_status.
+            if (rx_status == RADIO_RX_SUCCESS || rx_status == RADIO_RX_MORE_PACKETS) // Check if a packet is available.
+            {
+            
+                if (packet.type != MESSAGE)
+                {
+                    snprintf(output, sizeof(output), "Error: wrong packet type: %d. Should be %d\n\r", packet.type, MESSAGE);
+                    uart_puts(output);
+                }            
+    
+                // Print out the message, along with the message ID and sender address.
+                snprintf(output, sizeof(output), "Message ID %d from 0x%.2X%.2X%.2X%.2X%.2X: '%s'\n\r",
+                    packet.payload.message.messageid,
+                    packet.payload.message.address[0],
+                    packet.payload.message.address[1],
+                    packet.payload.message.address[2],
+                    packet.payload.message.address[3],
+                    packet.payload.message.address[4],
+                    packet.payload.message.messagecontent);
+                uart_puts(output); 
+    
+            }
+            
+            // Use the commented line below to set the transmit address to the one specified in the received message packet.
+			// Radio_Set_Tx_Addr(packet.payload.message.address);
+			// 
+			Radio_Set_Tx_Addr(trans_addr);  // or use the address manually informed by trans_addr.
+			// Reply to the sender by sending an ACK packet, reusing the packet data structure.
+			packet.type = ACK;
+			// Se the ack message id:
+			packet.payload.ack.messageid = 44;
+		
+
+			if (Radio_Transmit(&packet, RADIO_WAIT_FOR_TX) == RADIO_TX_MAX_RT)
+			{
+				// If the max retries was reached, the packet was not acknowledged.
+				// This usually occurs if the receiver was not configured correctly or
+				// if the sender didn't copy its address into the radio packet properly.
+				snprintf(output, sizeof(output), "Could not reply to sender.\n\r");
+				uart_puts(output);
+			}
+			else
+			{
+                // the transmission was completed successfully
+                snprintf(output, sizeof(output), "ACK sent.\r\n");
+                uart_puts(output);
+			}
             rxflag = 0;
-            uart_putc('r');
         }
     }
 }
